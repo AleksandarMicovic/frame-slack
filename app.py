@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for
+from flask import Flask, request, redirect, render_template, url_for, jsonify
 #from helpers import token_required
 from cryptography.fernet import Fernet
 import os
@@ -19,10 +19,12 @@ def home():
 def slack():
     cipher = CIPHER_SUITE.encrypt(bytes(request.form['command'].split(" ")[1]))
 
-    response = "Success! Your Frame terminal can be found here: {url}".format(
+    response = {
+        "text": "Success! Your Frame terminal can be found here: {url}".format(
                     url=url_for('frame_terminal', cipher=cipher, _external=True))
+    }
 
-    return response
+    return jsonify(response)
 
 
 @app.route('/frame/<cipher>', methods=['GET'])

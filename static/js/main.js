@@ -8,8 +8,6 @@ $(document).ready(function() {
         fileName: $("#url").val()
     });
 
-    alert($("#url").val());
-
     frameApp.bind(FrameApp.EVENT_ERROR, function(error) {
         if (error.code == 57) {
             userMessage("Instance starting. Sit tight.");
