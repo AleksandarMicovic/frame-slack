@@ -2,7 +2,7 @@
   "name": "Frame/Slack Integration",
   "description": "A Frame integration for Slack.",
   "image": "heroku/python",
-  "repository": "",
+  "repository": "https://github.com/AleksandarMicovic/frame-slack.git",
   "keywords": ["python", "flask"],
   "addons": []
 }
