@@ -18,15 +18,15 @@ def home():
 @token_required
 def slack():
     try:
-        url = request.form['text']
-        
-        if ' ' in url:
-            url = url.split(' ')[0]
+        user_url = request.form['text']
 
-        if get_url_mimetype(url) in app.config['FRAME_APPS'].keys():
-            cipher = CIPHER_SUITE.encrypt(bytes(url)
+        if ' ' in user_url:
+            user_url = url.split(' ')[0]
+
+        if get_url_mimetype(user_url) in app.config['FRAME_APPS'].keys():
+            cipher = CIPHER_SUITE.encrypt(bytes(user_url))
             response = "Success! Your Frame terminal can be found here: {url}".format(
-                        url=url_for('frame_terminal', cipher=cipher, _external=True))
+                url=url_for('frame_terminal', cipher=cipher, _external=True))
         else:
             response = "There is a problem with your URL. Try submitting a URL " + \
                        "with nothing else, and ensure that it's an image or a text file."
