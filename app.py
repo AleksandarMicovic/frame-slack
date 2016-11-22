@@ -18,8 +18,13 @@ def home():
 @token_required
 def slack():
     try:
-        if get_url_mimetype(request.form['text']) in app.config['FRAME_APPS'].keys():
-            cipher = CIPHER_SUITE.encrypt(bytes(request.form['text']))
+        url = request.form['text']
+        
+        if ' ' in url:
+            url = url.split(' ')[0]
+
+        if get_url_mimetype(url) in app.config['FRAME_APPS'].keys():
+            cipher = CIPHER_SUITE.encrypt(bytes(url)
             response = "Success! Your Frame terminal can be found here: {url}".format(
                         url=url_for('frame_terminal', cipher=cipher, _external=True))
         else:
