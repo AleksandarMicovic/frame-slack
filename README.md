@@ -58,3 +58,13 @@ or, locally, by:
 ```
 $ python app.py
 ```
+
+
+Usage
+-----
+
+In slack, simply use `/frame` with a URL like so:
+
+```
+/frame http://i.imgur.com/kmwJmi7.jpg
+```
