@@ -6,8 +6,10 @@ from config import SLACK_TOKEN
 def token_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # TODO: TRY EXCEPT HERE
-        if request.form['SLACK_TOKEN'] != SLACK_TOKEN:
-            return redirect(url_for('login', next=request.url))
+        try:
+            if request.form['token'] != SLACK_TOKEN:
+                return redirect(url_for('home'))
+        except:
+            return redirect(url_for('home'))
         return f(*args, **kwargs)
     return decorated_function

@@ -1,5 +1,5 @@
 from flask import Flask, request, redirect, render_template, url_for, jsonify
-#from helpers import token_required
+from helpers import token_required
 from cryptography.fernet import Fernet
 import os
 import requests
@@ -15,7 +15,7 @@ def home():
 
 
 @app.route('/slack', methods=['POST'])
-#@token_required
+@token_required
 def slack():
     cipher = CIPHER_SUITE.encrypt(bytes(request.form['text']))
 
