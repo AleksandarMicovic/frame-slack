@@ -24,7 +24,7 @@ def slack():
         # focus on the first part.
 
         if ' ' in user_url:
-            user_url = url.split(' ')[0]
+            user_url = user_url.split(' ')[0]
 
         # Check whether or not this is a file, and if so, whether or not we
         # have a Frame application that can open it. Afterwards, encrypt, and
