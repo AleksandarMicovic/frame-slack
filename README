@@ -1,8 +1,10 @@
-# Frame-Slack Integration
+Frame-Slack Integration
+=========================
 
 Flack (Frame + Slack) is a Slack slash command that allows you to edit text files, and images from the net in a single Frame instance.
 
-## Installation
+Installation
+------------
 
 Clone the repository:
 
@@ -41,7 +43,9 @@ Copy the result from above, and then export just like the Slack command:
 export ENCRYPTION_KEY=YOUR_KEY_HERE
 ```
 
-##Running
+
+Running
+-------
 
 To run, simply deploy to heroku:
 
