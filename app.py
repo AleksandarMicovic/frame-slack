@@ -1,36 +1,36 @@
 from flask import Flask, request, redirect, render_template, url_for
+#from helpers import token_required
+from cryptography.fernet import Fernet
 import os
 import requests
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+CIPHER_SUITE = Fernet(app.config['ENCRYPTION_KEY'], )
 
 
 @app.route('/')
 def home():
-    # Will also serve as the page for errors.
-    return "HOME FOR EVERYTHING :)"
+    return render_template("home.html")
 
 
 @app.route('/slack', methods=['POST'])
+#@token_required
 def slack():
-    url = request.form['command'].split(" ")[1]
-    response = "Your Frame app can be found at: " +\
-               url_for(frame_terminal, url=url)
+    cipher = CIPHER_SUITE.encrypt(bytes(request.form['command'].split(" ")[1]))
+
+    response = "Success! Your Frame terminal can be found here: {url}".format(
+                    url=url_for('frame_terminal', cipher=cipher, _external=True))
 
     return response
-        
 
-@app.route('/frame', methods=['GET'])
-def frame_terminal():
-    req = None
-    frame_app = None
 
+@app.route('/frame/<cipher>', methods=['GET'])
+def frame_terminal(cipher):
+    url = CIPHER_SUITE.decrypt(bytes(cipher))
+    print url
     try:
-        req = requests.get(request.args.get('url'),
-                           headers={"Range": "bytes=0-10"})
-
-        print req.headers["Content-Type"]
+        req = requests.get(url, headers={"Range": "bytes=0-10"})
 
         if req.headers["Content-Type"] in ("text/plain", "image/jpeg"):
             frame_app = app.config['FRAME_APPS'][req.headers["Content-Type"]]
@@ -40,7 +40,7 @@ def frame_terminal():
     except Exception as e:
         return redirect(url_for('home'))
 
-    return render_template('terminal.html', app=frame_app)
+    return render_template('terminal.html', app=frame_app, url=url)
 
 
 if __name__ == '__main__':

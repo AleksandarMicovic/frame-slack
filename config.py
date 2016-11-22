@@ -7,3 +7,4 @@ FRAME_APPS = {
 }
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
+ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY']

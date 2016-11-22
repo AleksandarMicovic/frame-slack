@@ -2,27 +2,17 @@ function userMessage(text) {
     $('#message').html(text);
 }
 
-function getURLParameter(name) {
-    var url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
-    var results = regex.exec(url);
-
-    if (!results) return null;
-    if (!results[2]) return '';
-
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
 $(document).ready(function() {
     var frameApp = new FrameApp({
         hash: $("#app").val(),
-        fileName: getURLParameter("url")
+        fileName: $("#url").val()
     });
+
+    alert($("#url").val());
 
     frameApp.bind(FrameApp.EVENT_ERROR, function(error) {
         if (error.code == 57) {
-            userMessage("Starting up an instance. Sit tight.");
+            userMessage("Instance starting. Sit tight.");
         } else if (undefined === error.code) {
             userMessage("Try another URL because the required application was not found. :(");
         } else {
@@ -31,7 +21,7 @@ $(document).ready(function() {
     });
 
     frameApp.bind(FrameApp.EVENT_READY, function() {
-        userMessage("Starting up your session!<br/>This may take up to 3 minutes.");
+        userMessage("Starting your session!<br/>This may take up to 3 minutes.");
 
         frameApp.startSession({
             connectOnStart: true,
