@@ -13,7 +13,6 @@ def home():
 
 
 @app.route('/slack', methods=['POST'])
-@token_required
 def slack():
     url = request.form['command'].split(" ")[1]
     response = "Your Frame app can be found at: " +\
