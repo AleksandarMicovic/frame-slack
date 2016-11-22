@@ -17,7 +17,7 @@ def home():
 @app.route('/slack', methods=['POST'])
 #@token_required
 def slack():
-    cipher = CIPHER_SUITE.encrypt(bytes(request.form['command'].split(" ")[1]))
+    cipher = CIPHER_SUITE.encrypt(bytes(request.form['text']))
 
     response = {
         "text": "Success! Your Frame terminal can be found here: {url}".format(
