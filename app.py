@@ -20,8 +20,15 @@ def slack():
     try:
         user_url = request.form['text']
 
+        # If the user is entering far more text than necessary, let's only
+        # focus on the first part.
+
         if ' ' in user_url:
             user_url = url.split(' ')[0]
+
+        # Check whether or not this is a file, and if so, whether or not we
+        # have a Frame application that can open it. Afterwards, encrypt, and
+        # send the user their link!
 
         if get_url_mimetype(user_url) in app.config['FRAME_APPS'].keys():
             cipher = CIPHER_SUITE.encrypt(bytes(user_url))
@@ -31,7 +38,9 @@ def slack():
             response = "There is a problem with your URL. Try submitting a URL " + \
                        "with nothing else, and ensure that it's an image or a text file."
     except KeyError as e:
-        # No text parameter means we aren't being called by Slack.
+        # No text parameter, the likely errors here, means we aren't being
+        # called by Slack.
+
         return redirect(url_for('home'))
 
     to_user = {
@@ -43,6 +52,8 @@ def slack():
 
 @app.route('/frame/<cipher>', methods=['GET'])
 def frame_terminal(cipher):
+    # Decrypt the URL we get, and try to grab the appropriate Frame app for use.
+
     try:
         url = CIPHER_SUITE.decrypt(bytes(cipher))
         frame_app = app.config['FRAME_APPS'][get_url_mimetype(url)]

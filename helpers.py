@@ -20,8 +20,13 @@ def get_url_mimetype(url):
     mimetype = None
 
     try:
+        # Only download the first 10 bytes of a file to get its Content-Type.
+
         req = requests.get(url, headers={"Range": "bytes=0-10"})
         mimetype = req.headers["Content-Type"]
+
+        # Plaintext often has an encoding as well. Strip it. Notepad will 
+        # handle everything.
 
         if ";" in mimetype:
             mimetype = mimetype.split(";")[0]
