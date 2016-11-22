@@ -30,12 +30,17 @@ def slack():
 @app.route('/frame/<cipher>', methods=['GET'])
 def frame_terminal(cipher):
     url = CIPHER_SUITE.decrypt(bytes(cipher))
-    print url
+
     try:
         req = requests.get(url, headers={"Range": "bytes=0-10"})
 
-        if req.headers["Content-Type"] in ("text/plain", "image/jpeg"):
-            frame_app = app.config['FRAME_APPS'][req.headers["Content-Type"]]
+        mimetype = req.headers["Content-Type"]
+
+        if ";" in mimetype:
+            mimetype = mimetype.split(";")[0]
+
+        if mimetype in ("text/plain", "image/jpeg"):
+            frame_app = app.config['FRAME_APPS'][mimetype]
         else:
             return redirect(url_for('home'))
 
