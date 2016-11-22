@@ -1,12 +1,12 @@
-from flask import Flask, request, redirect, render_template, url_for, jsonify
-from helpers import token_required
-from cryptography.fernet import Fernet
 import os
 import requests
+from flask import Flask, request, redirect, render_template, url_for, jsonify
+from helpers import token_required, get_url_mimetype
+from cryptography.fernet import Fernet
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-CIPHER_SUITE = Fernet(app.config['ENCRYPTION_KEY'], )
+CIPHER_SUITE = Fernet(app.config['ENCRYPTION_KEY'])
 
 
 @app.route('/')
@@ -17,34 +17,31 @@ def home():
 @app.route('/slack', methods=['POST'])
 @token_required
 def slack():
-    cipher = CIPHER_SUITE.encrypt(bytes(request.form['text']))
+    try:
+        if get_url_mimetype(request.form['text']) in app.config['FRAME_APPS'].keys():
+            cipher = CIPHER_SUITE.encrypt(bytes(request.form['text']))
+            response = "Success! Your Frame terminal can be found here: {url}".format(
+                        url=url_for('frame_terminal', cipher=cipher, _external=True))
+        else:
+            response = "There is a problem with your URL. Try submitting a URL " + \
+                       "with nothing else, and ensure that it's an image or a text file."
+    except KeyError as e:
+        # No text parameter means we aren't being called by Slack.
+        return redirect(url_for('home'))
 
-    response = {
-        "text": "Success! Your Frame terminal can be found here: {url}".format(
-                    url=url_for('frame_terminal', cipher=cipher, _external=True))
+    to_user = {
+        "text": response
     }
 
-    return jsonify(response)
+    return jsonify(to_user)
 
 
 @app.route('/frame/<cipher>', methods=['GET'])
 def frame_terminal(cipher):
-    url = CIPHER_SUITE.decrypt(bytes(cipher))
-
     try:
-        req = requests.get(url, headers={"Range": "bytes=0-10"})
-
-        mimetype = req.headers["Content-Type"]
-
-        if ";" in mimetype:
-            mimetype = mimetype.split(";")[0]
-
-        if mimetype in ("text/plain", "image/jpeg"):
-            frame_app = app.config['FRAME_APPS'][mimetype]
-        else:
-            return redirect(url_for('home'))
-
-    except Exception as e:
+        url = CIPHER_SUITE.decrypt(bytes(cipher))
+        frame_app = app.config['FRAME_APPS'][get_url_mimetype(url)]
+    except:
         return redirect(url_for('home'))
 
     return render_template('terminal.html', app=frame_app, url=url)
